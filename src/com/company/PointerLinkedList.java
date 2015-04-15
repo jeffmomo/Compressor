@@ -41,14 +41,14 @@ public class PointerLinkedList<T>
 
 	public PointerLinkedList find(T item)
 	{
-		PointerLinkedList head = this;
 
-		PointerLinkedList nextItem = head;
+		PointerLinkedList nextItem = this;
 		while(nextItem != null)
 		{
 			if(nextItem._value == item)
 			{
-				return nextItem;
+				swap(this, nextItem);
+				return this;
 			}
 			nextItem = nextItem._next;
 		}

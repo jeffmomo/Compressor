@@ -9,35 +9,23 @@ public class Trie
 	public final static PointerLinkedList<Character> LAMBDA = new PointerLinkedList<Character>();
 
 	private int _count = 0;
-	private PointerLinkedList<Character> _base;
-	//private PointerLinkedList<Character> _next;
-	private PointerLinkedList<Character> _current;
+	private PointerLinkedList<Byte> _base;
+	//private PointerLinkedList<Byte> _next;
+	private PointerLinkedList<Byte> _current;
 	private boolean _sameLayer = true;
 
 	public Trie()
 	{
-		_base = new PointerLinkedList<Character>();
+		_base = new PointerLinkedList<Byte>();
 		//_next = _base;
 		_current = _base;
 	}
 
-	public void addUnseenAt(String at, char toAdd)
-	{
-		// Increments the sequence number
-		_count++;
-
-		PointerLinkedList<Character> start = _base;
-		int len = at.length();
-		for(int i = 0; i < len; i++)
-		{
-			start = (PointerLinkedList<Character>) start.find(at.charAt(i));
-		}
-		start.add(_count, toAdd);
-	}
-
-	public int advance(char chr)
+	public int advance(byte chr)
 	{
 		PointerLinkedList next;
+		int nextSeqNum = -1;
+
 		if(_sameLayer)
 			next = _current.find(chr);
 		else
@@ -45,7 +33,8 @@ public class Trie
 			next = _current.getBelow();
 			if(next == null)
 			{
-				_current = _current.addBelow(new PointerLinkedList<Character>());
+				nextSeqNum = _current.getSequenceNumber();
+				_current = _current.addBelow(new PointerLinkedList<Byte>());
 			}
 			else if(next.find(chr) == null)
 			{
@@ -67,7 +56,7 @@ public class Trie
 		else
 		{
 			_current.add(++_count, chr);
-			int out = (_current == _base && _sameLayer) ? 0 : _current.getSequenceNumber() - 1;
+			int out = (_current == _base && _sameLayer) ? 0 : nextSeqNum;
 			_current = _base;
 			_sameLayer = true;
 			return out;

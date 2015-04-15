@@ -1,49 +1,46 @@
 package com.company;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.LinkedList;
+
 /**
  * Created by Jeff on 8/04/2015.
  */
 public class Decompressor
 {
-	private String _output = "";
 	private int[] _sequenceArray;
-	private char[] _charArray;
+	private byte[] _charArray;
 	private int _position;
+	private OutputStream _stream;
 
 
-	public Decompressor(int maxSequence)
+	public Decompressor(int maxSequence, OutputStream stream)
 	{
 		_sequenceArray = new int[maxSequence];
-		_charArray = new char[maxSequence];
+		_charArray = new byte[maxSequence];
+		_stream = stream;
 	}
 
-	public void process(int seqNum, char chr)
+	public void process(int seqNum, byte chr) throws IOException
 	{
 		_sequenceArray[++_position] = seqNum;
 		_charArray[_position] = chr;
 
-		char currentChar = chr;
-		String tempString = "";
+		byte currentChar = chr;
+		LightList list = new LightList(currentChar);
 		while(seqNum != 0)
 		{
 			currentChar = _charArray[seqNum];
 			seqNum = _sequenceArray[seqNum];
-			tempString = currentChar + tempString;
+
+			list = list.add(currentChar);
 		}
-		_output += tempString + chr;
-	}
-
-	public String getOutput()
-	{
-		return _output;
-	}
-
-	private String getString(int seq)
-	{
-		if(seq == 0)
-			return "";
-		else
-			return getString(_sequenceArray[seq]) + _charArray[seq];
+		while(list != null)
+		{
+			_stream.write(list.value);
+			list = list.prev;
+		}
 	}
 
 }
