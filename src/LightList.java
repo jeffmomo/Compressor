@@ -1,5 +1,3 @@
-package com.company;
-
 /**
  * Simple doubly-linked list
  */
@@ -13,7 +11,9 @@ public class LightList
 	{
 		value = val;
 	}
-	public LightList(byte val, LightList p)
+
+
+	private LightList(byte val, LightList p)
 	{
 		value = val;
 		prev = p;

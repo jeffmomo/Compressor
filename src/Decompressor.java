@@ -1,8 +1,5 @@
-package com.company;
-
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.LinkedList;
 
 /**
  * Created by Jeff on 8/04/2015.

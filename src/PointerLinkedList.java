@@ -1,7 +1,3 @@
-package com.company;
-
-import java.util.LinkedList;
-
 /**
  * A move-to-front list implementation with multiple layers which stores a sequence number and a value
  */
