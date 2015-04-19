@@ -40,10 +40,14 @@ public class BitUnpacker {
             printIntBits(inputStream.read());
             printIntBits(inputStream.read());
             printIntBits(inputStream.read());
+            printIntBits(inputStream.read());
+            printIntBits(inputStream.read());
+            printIntBits(inputStream.read());
+            printIntBits(inputStream.read());
             printIntBits(inputStream.read());*/
             
             BitUnpacker b = new BitUnpacker();
-            b.dictionarySize = 7;
+            //b.dictionarySize = 7;
             b.UnpackBits(inputStream);
             
         } catch(Exception e){};
@@ -65,6 +69,7 @@ public class BitUnpacker {
         int leftover = 0;
         int byteSequence = 0;
         int buffer;
+        int parseNumLength;
         boolean foundParseNum = false;
 
         
@@ -78,79 +83,140 @@ public class BitUnpacker {
             while(buffer != -1)
             {
                 
+                System.out.println("Start of loop buffer ");
+                printIntBits(buffer);
                 // finding parse number
                 
-                int parseNumLength = getBitsNeeded(dictionarySize);
-                System.out.println("parse num length " + parseNumLength);
+                parseNumLength = getBitsNeeded(dictionarySize);
+                System.out.println("dictionary size " + dictionarySize + " parse num length " + parseNumLength);
                 
                 while (!foundParseNum)
                 {
+                    System.out.println("finding parse num");
                     // if the ditionary size is zero then there is no parse number
                     if(parseNumLength == 0)
                     {
-                        
                         System.out.println("parse number is zero");
                         // skip and look for byte array
                         foundParseNum = true;
                         leftover = 0;
-                        buffer = inputStream.read();
                         break;
                     } else
                     // if there is carry over, concat that to the parse num
                     if(leftover > 0)
                     {
                         // shift and shift back to remove already processed bits
-                        parseNumber = (buffer << 32-leftover) >>> (32-leftover);
-                        parseNumLength -= leftover;
-                        leftover = 0;
+                        buffer = (buffer << 32-leftover) >>> (32-leftover);
+                        System.out.println("leftover buffer ");
+                        printIntBits(buffer);
+                        // set parse number and leftover based on which is larger
+                        if (parseNumLength <= leftover)
+                        {
+                            parseNumber = (buffer << (8-leftover)) >>> (8-parseNumLength);
+                            leftover -= parseNumLength;
+                            foundParseNum = true;
+                            
+                            System.out.println("leftover size " + leftover);
+                            break;
+                        }
+                        else
+                        {
+                            parseNumLength -= leftover;
+                            System.out.println("parsenumlength " + parseNumLength);
+                            parseNumber = buffer;
+                            buffer = inputStream.read();
+                            System.out.println("buffer " + buffer);
+                            printIntBits(buffer); 
+                            leftover = 0;//8-parseNumLength;
+                            System.out.println("leftover set " + leftover);
+                        }
                     } else
                     // if parse number is less than 8 bits long then the byte read will contain some of the byte sequence
                     if(parseNumLength <= 8)
-                    {
+                    { 
+                        System.out.println("parse number less than a byte");
                         parseNumber = (parseNumber << parseNumLength) | (buffer >>> 8-parseNumLength);                        
                         leftover = 8 - parseNumLength;
-                        parseNumLength = 0;
                         foundParseNum = true;
                         break;
                     } else
                     // otherwise the parse number takes multiple bytes and will need to be built
                     {
                         System.out.println("parse number spans more than 1 byte");
-                        parseNumber = parseNumber << (parseNumLength - 8 )| buffer;            
+                        parseNumber = parseNumber << 8 | buffer;            
                         parseNumLength -= 8;
                         buffer = inputStream.read();
+                        System.out.println("buffer " + buffer);
+                        printIntBits(buffer);
                     }
                 }
-                System.out.println("leftover size " + leftover);
+                
 
                 // finding byte sequence
+                
+                System.out.println("finding byte seq");
                 if(leftover > 0)
                 {
+                    printIntBits(buffer);
+                    
+                    System.out.println("leftover " + leftover);
+                    // move leftover into position
+                    int l = (((buffer << (32 - leftover))) >>> (32 - leftover)) << (8-leftover);
+                    
+                    // readin rest of byte sequence
+                    buffer = inputStream.read();
+                    
+                    // shift into position
+                    int d = buffer >>> leftover;
+                    
+                    
+                    byteSequence = l | d;
+                    
                     // shift and shift back to remove what was already used
-                    buffer = (buffer << 32 - leftover) >>> (32 - leftover);
-                    byteSequence = buffer << (8-leftover);
+                    
+                    /*
+                    //buffer = (buffer << 32 - leftover) >>> (32 - leftover);
+                    byteSequence = (buffer << 32 - leftover) >>> (32 - leftover) << (8-leftover);
+                    System.out.println("leftover byte seq len" + leftover);
+                    printIntBits(byteSequence);
+                    
                     // go on to next byte
                     buffer = inputStream.read();
+                    System.out.println("buffer " + buffer);
+                    printIntBits(buffer);
                     byteSequence = byteSequence | (buffer >>> leftover);
+                    
+                    System.out.println("byte seq + leftover ");
+                    printIntBits(byteSequence);*/
                     
                     // break out of loop if the end of file has been reached
                     if(buffer == -1)
-                        break;                    
+                        break;
                     // leftover is still the same
+                    
                 } else
+                if(parseNumLength == 0)
                 {
-                    byteSequence = inputStream.read();
+                    byteSequence = buffer;
+                }else
+                {
+                    buffer = inputStream.read();
+                    System.out.println("buffer " + buffer);
+                    printIntBits(buffer);
+                    byteSequence = buffer;
                 }
                 dictionarySize++;
                 foundParseNum = false;
                 
                 // TODO chuck output shit here
-                System.out.println("final parse number" + parseNumber);
+                System.out.println("parse num " + parseNumber);
+                System.out.println("byte seq  " + byteSequence);
                 BytesUtil.printBytes(BytesUtil.intToBytes(byteSequence, 1));
-                
+                // TODO chuck output shit here
                
                 if(leftover == 0)
                 {
+                    System.out.println("no left");
                     buffer = inputStream.read();
                 }
             }

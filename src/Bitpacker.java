@@ -1,9 +1,6 @@
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Scanner;
-import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -21,7 +18,7 @@ public class Bitpacker
     public static void main(String[] args) 
     {
         // testing
-        int dictionarySize = Integer.parseInt(args[0]);
+       /* int dictionarySize = Integer.parseInt(args[0]);
         int parseNumber = Integer.parseInt(args[1]);
         
         
@@ -32,15 +29,38 @@ public class Bitpacker
         
         //BytesUtil.printBytes(buf);
         System.out.println("" + BytesUtil.bytesToInt(buf, 0, buf.length));
-        
+        */
+        int dictionarySize = 0;
         Bitpacker b = new Bitpacker();
+        b.packBytes(dictionarySize++, 0, (byte) 126);
+        b.packBytes(dictionarySize++, 1, (byte) 13);
+        b.packBytes(dictionarySize++, 2, (byte) 7);
+        b.packBytes(dictionarySize++, 0, (byte) 14);
+        b.packBytes(dictionarySize++, 0, (byte) 124);
+        b.packBytes(dictionarySize++, 3, (byte) 126);
+        b.packBytes(dictionarySize++, 0, (byte) 13);
+        b.packBytes(dictionarySize++, 1, (byte) 243);
+        b.packBytes(dictionarySize++, 2, (byte) 124);
+        b.packBytes(dictionarySize++, 0, (byte) 124);
+        
+        /*
         b.leftoverBits = 1;
-        b.leftoverLength = 1;
-        b.packBytes(dictionarySize, parseNumber, (byte)245);
+        b.leftoverLength = 1;*/
+        //b.packBytes(dictionarySize, parseNumber, (byte)245);
+        
+        
+        
         
         System.out.println("final output");
-        BytesUtil.printBytes(b.returnPackedBits());
+        byte[] finalBytes = b.returnPackedBits();
+        BytesUtil.printBytes(finalBytes);
         
+        try 
+        {            
+            FileOutputStream f = new FileOutputStream("f");
+            f.write(finalBytes);
+            f.close();
+        } catch (Exception e){};
     }
 
     public Bitpacker() 
@@ -69,6 +89,7 @@ public class Bitpacker
     // dictonary size determins how many bits to leave for the parse number
     public void packBytes(int dictionarySize,int parseNumber, byte character)
     {
+        System.out.println("dictionary size: "+dictionarySize);
         // get number of bits and bytes need for phrase number
         int bitsNeeded = getBitsNeeded(dictionarySize);
         
