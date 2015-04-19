@@ -10,8 +10,6 @@ import java.io.IOException;
 public class Bitpacker 
 {
     private ByteArrayOutputStream byteOutput;
-    private byte byteBiffer ;
-    private int bitsUsed;
     private int leftoverBits;
     private int leftoverLength;
     
@@ -66,8 +64,6 @@ public class Bitpacker
     public Bitpacker() 
     {
         byteOutput = new ByteArrayOutputStream();
-        byteBiffer = 0;
-        bitsUsed = 0;
         leftoverBits = 0;
         leftoverLength = 0;
     }
@@ -79,7 +75,7 @@ public class Bitpacker
         int l = leftoverBits << (8 - leftoverLength);
         byte[] outBytes = BytesUtil.intToBytes(l,1);
         System.out.println("derp ");
-        printIntBits(l);
+        BytesUtil.printIntBits(l);
         byteOutput.write(outBytes, 0, 1);
         
         // retrun whole output as byte array
@@ -91,7 +87,7 @@ public class Bitpacker
     {
         System.out.println("dictionary size: "+dictionarySize);
         // get number of bits and bytes need for phrase number
-        int bitsNeeded = getBitsNeeded(dictionarySize);
+        int bitsNeeded = BytesUtil.getBitsNeeded(dictionarySize);
         
         // shifting parse number into correct position
         int p = parseNumber << 8;//(bitsNeeded);
@@ -102,23 +98,23 @@ public class Bitpacker
         
         // debuging
         System.out.println("co " + co);
-        printIntBits(co);
+        BytesUtil.printIntBits(co);
         System.out.println("p " + p);
-        printIntBits(p);
+        BytesUtil.printIntBits(p);
         System.out.println("c " + c);
-        printIntBits(c);
+        BytesUtil.printIntBits(c);
         
         // pack both character and parse number with leftover
         int packedBytes = co | p | c;
         System.out.println("concat");
-        printIntBits(packedBytes);
+        BytesUtil.printIntBits(packedBytes);
         
         // finding how many bits do not form whole bytes
         int remainder = (leftoverLength + bitsNeeded)% 8;
         System.out.println("remainder " + remainder);
         
         // write out whole bytes to out stream
-        byte[] outBytes = BytesUtil.intToBytes((packedBytes) >>> remainder, getBytesNeeded(leftoverLength + bitsNeeded + 8 - remainder));
+        byte[] outBytes = BytesUtil.intToBytes((packedBytes) >>> remainder, BytesUtil.getBytesNeeded(leftoverLength + bitsNeeded + 8 - remainder));
         
         System.out.println("out bytes");
         BytesUtil.printBytes(outBytes);
@@ -138,42 +134,7 @@ public class Bitpacker
         }
         leftoverLength = remainder;
         System.out.println("leftover");
-        printIntBits(leftoverBits);
+        BytesUtil.printIntBits(leftoverBits);
     }
     
-    // prints int bits
-    public static void printIntBits(int num)
-    {
-         int mask = 1 << 31;
-         for(int i=1; i<=32; i++) 
-         {
-            if( (mask & num) != 0 )
-                System.out.print(1);
-            else
-                System.out.print(0);
-
-            if( (i % 4) == 0 )
-                System.out.print(" ");
-
-            mask = mask >>> 1;
-        }
-         System.out.println();
-    }
-    
-    // returns number of bytes needed to store phrase number
-    public static int getBytesNeeded(int bits)
-    {
-        return (int) Math.ceil((double)(bits)/8);
-    }
-    
-    // returns number of bits needed to store phrase number
-    public static int getBitsNeeded(int dictonarySize)
-    {
-        int bitsNeeded = 0;
-        while((dictonarySize)/(Math.pow(2, bitsNeeded)) >= 1)
-        {
-            bitsNeeded++;
-        }
-        return bitsNeeded;
-    }
 }

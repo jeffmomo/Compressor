@@ -36,4 +36,39 @@ public class BytesUtil {
         }
         System.out.print("\n");
     }
+    // prints int bits
+    public static void printIntBits(int num)
+    {
+         int mask = 1 << 31;
+         for(int i=1; i<=32; i++) 
+         {
+            if( (mask & num) != 0 )
+                System.out.print(1);
+            else
+                System.out.print(0);
+
+            if( (i % 4) == 0 )
+                System.out.print(" ");
+
+            mask = mask >>> 1;
+        }
+         System.out.println();
+    }
+    // returns number of bits needed to store bits
+    public static int getBitsNeeded(int num)
+    {
+        int bitsNeeded = 0;
+        while((num)/ (1 << bitsNeeded) >= 1)
+        {
+            bitsNeeded++;
+        }
+        return bitsNeeded;
+    }
+    // returns number of bytes needed to store bits
+    public static int getBytesNeeded(int bits)
+    {
+        return (int) Math.ceil((double)(bits)/8);
+    }
+    
+    
 }

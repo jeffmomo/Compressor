@@ -78,16 +78,16 @@ public class BitUnpacker {
             
             buffer = inputStream.read();
             System.out.println("buffer " + buffer);
-            printIntBits(buffer);
+            BytesUtil.printIntBits(buffer);
             // loop
             while(buffer != -1)
             {
                 
                 System.out.println("Start of loop buffer ");
-                printIntBits(buffer);
+                BytesUtil.printIntBits(buffer);
                 // finding parse number
                 
-                parseNumLength = getBitsNeeded(dictionarySize);
+                parseNumLength = BytesUtil.getBitsNeeded(dictionarySize);
                 System.out.println("dictionary size " + dictionarySize + " parse num length " + parseNumLength);
                 
                 while (!foundParseNum)
@@ -108,7 +108,7 @@ public class BitUnpacker {
                         // shift and shift back to remove already processed bits
                         buffer = (buffer << 32-leftover) >>> (32-leftover);
                         System.out.println("leftover buffer ");
-                        printIntBits(buffer);
+                        BytesUtil.printIntBits(buffer);
                         // set parse number and leftover based on which is larger
                         if (parseNumLength <= leftover)
                         {
@@ -126,7 +126,7 @@ public class BitUnpacker {
                             parseNumber = buffer;
                             buffer = inputStream.read();
                             System.out.println("buffer " + buffer);
-                            printIntBits(buffer); 
+                            BytesUtil.printIntBits(buffer); 
                             leftover = 0;//8-parseNumLength;
                             System.out.println("leftover set " + leftover);
                         }
@@ -147,7 +147,7 @@ public class BitUnpacker {
                         parseNumLength -= 8;
                         buffer = inputStream.read();
                         System.out.println("buffer " + buffer);
-                        printIntBits(buffer);
+                        BytesUtil.printIntBits(buffer);
                     }
                 }
                 
@@ -157,7 +157,7 @@ public class BitUnpacker {
                 System.out.println("finding byte seq");
                 if(leftover > 0)
                 {
-                    printIntBits(buffer);
+                    BytesUtil.printIntBits(buffer);
                     
                     System.out.println("leftover " + leftover);
                     // move leftover into position
@@ -202,7 +202,7 @@ public class BitUnpacker {
                 {
                     buffer = inputStream.read();
                     System.out.println("buffer " + buffer);
-                    printIntBits(buffer);
+                    BytesUtil.printIntBits(buffer);
                     byteSequence = buffer;
                 }
                 dictionarySize++;
@@ -225,39 +225,6 @@ public class BitUnpacker {
         
     }
     
-    // prints int bits
-    public static void printIntBits(int num)
-    {
-         int mask = 1 << 31;
-         for(int i=1; i<=32; i++) 
-         {
-            if( (mask & num) != 0 )
-                System.out.print(1);
-            else
-                System.out.print(0);
-
-            if( (i % 4) == 0 )
-                System.out.print(" ");
-
-            mask = mask >>> 1;
-        }
-         System.out.println();
-    }    
-    // returns number of bytes needed to store phrase number
-    public static int getBytesNeeded(int bits)
-    {
-        return (int) Math.ceil((double)(bits)/8);
-    }
     
-    // returns number of bits needed to store bits
-    public static int getBitsNeeded(int dictonarySize)
-    {
-        int bitsNeeded = 0;
-        while((dictonarySize)/(Math.pow(2, bitsNeeded)) >= 1)
-        {
-            bitsNeeded++;
-        }
-        return bitsNeeded;
-    }
     
 }
