@@ -3,15 +3,16 @@ package com.company;
 import java.util.LinkedList;
 
 /**
- * Created by Jeff on 7/04/2015.
+ * A move-to-front list implementation with multiple layers which stores a sequence number and a value
  */
-public class PointerLinkedList<T>
+public class PointerLinkedList<T>// implements ICharFinder<T>
 {
 	private PointerLinkedList<T> _next;
 	private PointerLinkedList<T> _below;
 	private int _sequenceNumber = -1;
 	private T _value;
 
+	// Constructs list with existing params
 	public PointerLinkedList(int seqNum, T item)
 	{
 		_sequenceNumber = seqNum;
@@ -22,8 +23,10 @@ public class PointerLinkedList<T>
 		_sequenceNumber = 0;
 	}
 
-	public PointerLinkedList add(int seqNum, T item)
+	// Adds to the list
+	public PointerLinkedList<T> add(int seqNum, T item)
 	{
+		// Supplements the current node if current node is not complete.
 		if(_value == null)
 		{
 			_sequenceNumber = seqNum;
@@ -31,7 +34,8 @@ public class PointerLinkedList<T>
 			return this;
 		}
 
-		PointerLinkedList nextItem = this;
+		// Otherwise adds to the end of the last node and returns the newly constructed node.
+		PointerLinkedList<T> nextItem = this;
 		while(nextItem._next != null)
 			nextItem = nextItem._next;
 
@@ -39,10 +43,12 @@ public class PointerLinkedList<T>
 		return nextItem._next;
 	}
 
+	// Finds the first occurance of item in the current layer. Performs move-to-front procedures.
 	public PointerLinkedList find(T item)
 	{
 
 		PointerLinkedList nextItem = this;
+		// Looks for value matching the argument. If found then swaps it to front and returns it
 		while(nextItem != null)
 		{
 			if(nextItem._value == item)
@@ -53,26 +59,30 @@ public class PointerLinkedList<T>
 			nextItem = nextItem._next;
 		}
 
-
+		// Returns null if not found
 		return null;
 	}
 
 
-	public PointerLinkedList addBelow(PointerLinkedList<T> list)
+	// Adds a list as a layer below the current node.
+	public PointerLinkedList<T> addBelow(PointerLinkedList<T> list)
 	{
 		return (_below = list);
 	}
 
+	// Gets the list below the current node
 	public PointerLinkedList<T> getBelow()
 	{
 		return _below;
 	}
 
+	// Gets the sequence number of the current node
 	public int getSequenceNumber()
 	{
 		return _sequenceNumber;
 	}
 
+	// Performs swapping of values. Used for MTF procedures
 	private void swap(PointerLinkedList<T> l1, PointerLinkedList<T> l2)
 	{
 		PointerLinkedList<T> below = l1._below;

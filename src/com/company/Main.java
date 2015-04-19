@@ -8,7 +8,7 @@ public class Main {
     {
 	// write your code here
 
-	    if(false)
+	    if(true)
 	    {
 
 		    Trie bob = new Trie();
@@ -17,10 +17,12 @@ public class Main {
 			    File f = new File("out.txt");
 			    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(f));
 
-			    int z = System.in.read();
-			    while (z != -1)
+			    int z = 0;//System.in.read();
+			    //while (z != -1)
+			    for(int i = 0; i < 6; i++)
 			    {
-				    //System.err.println(z);
+				    z = System.in.read();
+				    System.err.println(z);
 				    int seq = bob.advance((byte) z);
 				    if (seq != -1)
 				    {
@@ -30,8 +32,10 @@ public class Main {
 					    bos.write(z);
 					    System.out.println(Integer.toString(seq, Character.MAX_RADIX) + "``" + (char) z);
 				    }
-				    z = System.in.read();
+
 			    }
+			    if(bob.finalisable())
+				    System.out.println(Integer.toString(bob.finalise(), Character.MAX_RADIX) + "``" + (char) z);
 			    bos.flush();
 			    bos.close();
 		    } catch (Exception e)

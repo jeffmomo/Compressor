@@ -1,7 +1,7 @@
 package com.company;
 
 /**
- * Created by Jeff on 15/04/2015.
+ * Simple doubly-linked list
  */
 public class LightList
 {

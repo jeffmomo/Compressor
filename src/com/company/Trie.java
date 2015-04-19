@@ -1,68 +1,99 @@
 package com.company;
 
+import java.util.Base64;
+
 /**
  * Created by Jeff on 7/04/2015.
  */
 public class Trie
 {
-	public final static int MAX_COUNT = 65535;
-	public final static PointerLinkedList<Character> LAMBDA = new PointerLinkedList<Character>();
-
+	// The current sequence number
 	private int _count = 0;
+
+	// The base list
 	private PointerLinkedList<Byte> _base;
-	//private PointerLinkedList<Byte> _next;
+
+	// List currently being looked at
 	private PointerLinkedList<Byte> _current;
+
+	// Whether to continue looking in same layer
 	private boolean _sameLayer = true;
+
+	// Represents the previous matching sequence number.
+	private PointerLinkedList<Byte> _prevSeen = null;
 
 	public Trie()
 	{
 		_base = new PointerLinkedList<Byte>();
-		//_next = _base;
 		_current = _base;
 	}
 
+	public boolean finalisable()
+	{
+		return _prevSeen != null;
+	}
+
+	// Outputs the final sequence
+	public int finalise()
+	{
+		return (_prevSeen == _base) ? 0 : _prevSeen.getSequenceNumber();
+	}
+
+	// Advances a byte through the trie. Returns either the sequence number or -1 which indicates its still in a matching sequence
 	public int advance(byte chr)
 	{
-		PointerLinkedList next;
+		PointerLinkedList<Byte> next;
 		int nextSeqNum = -1;
 
+		// First look in the current layer to find a matching char
 		if(_sameLayer)
+			// Set next to be the node representing the byte being looked for
 			next = _current.find(chr);
+		// If not looking in the same layer
 		else
 		{
+			// See if a lower layer exists and sets next to it.
 			next = _current.getBelow();
+			// If it doesnt exist, then create a new layer below.
 			if(next == null)
 			{
 				nextSeqNum = _current.getSequenceNumber();
 				_current = _current.addBelow(new PointerLinkedList<Byte>());
 			}
+			// If the lower layer exists but does not contain the byte, then add the current byte to that layer.
+			// Gets the sequence number and outputs it. And also start the next search from the base again.
 			else if(next.find(chr) == null)
 			{
 				next.add(++_count, chr);
 				_sameLayer = true;
 				int out = _current.getSequenceNumber();
 				_current = _base;
+				_prevSeen = null;
 				return out;
-
 			}
 		}
 
+		// If byte being looked for is found
 		if(next != null)
 		{
+			// Go down the trie
 			_sameLayer = false;
 			_current = next;
+			_prevSeen = _current;
+			// Returns -1 meaning it is still matching sequence
 			return -1;
 		}
+		// If not found, then adds to the current layer of the trie, and outputs the appropriate sequence number. Also starts the next search from base again.
 		else
 		{
 			_current.add(++_count, chr);
 			int out = (_current == _base && _sameLayer) ? 0 : nextSeqNum;
 			_current = _base;
 			_sameLayer = true;
+			_prevSeen = null;
 			return out;
 		}
 
 	}
 
-	//public void findClosestMatch(String )
 }
