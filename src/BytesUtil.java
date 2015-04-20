@@ -68,7 +68,7 @@ public class BytesUtil {
     // returns number of bytes needed to store bits
     public static int getBytesNeeded(int bits)
     {
-        return (int) Math.ceil((double)(bits)/8);
+        return (bits + 1) / 8;
     }
     
     
