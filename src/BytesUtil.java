@@ -58,8 +58,9 @@ public class BytesUtil {
     public static int getBitsNeeded(int num)
     {
         int bitsNeeded = 0;
-        while((num)/ (1 << bitsNeeded) >= 1)
+        while(num >= 1)
         {
+            num = num >> 1;
             bitsNeeded++;
         }
         return bitsNeeded;
