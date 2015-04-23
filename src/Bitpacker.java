@@ -7,11 +7,12 @@ import java.io.IOException;
  * @author Lanqin Yuan
  * 1196194
  */
-public class Bitpacker 
+public class Bitpacker implements IPacker
 {
     private ByteArrayOutputStream byteOutput;
     private int leftoverBits;
     private int leftoverLength;
+	private int dictionarySize = 0;
     
     public static void main(String[] args) 
     {
@@ -28,18 +29,18 @@ public class Bitpacker
         //BytesUtil.printBytes(buf);
         System.out.println("" + BytesUtil.bytesToInt(buf, 0, buf.length));
         */
-        int dictionarySize = 0;
+        //int dictionarySize = 0;
         Bitpacker b = new Bitpacker();
-        b.packBytes(dictionarySize++, 0, (byte) 126);
-        b.packBytes(dictionarySize++, 1, (byte) 13);
-        b.packBytes(dictionarySize++, 2, (byte) 7);
-        b.packBytes(dictionarySize++, 0, (byte) 14);
-        b.packBytes(dictionarySize++, 0, (byte) 124);
-        b.packBytes(dictionarySize++, 3, (byte) 126);
-        b.packBytes(dictionarySize++, 0, (byte) 13);
-        b.packBytes(dictionarySize++, 1, (byte) 243);
-        b.packBytes(dictionarySize++, 2, (byte) 124);
-        b.packBytes(dictionarySize++, 0, (byte) 124);
+        b.packBytes( 0, (byte) 126);
+        b.packBytes( 1, (byte) 13);
+        b.packBytes(2, (byte) 7);
+        b.packBytes( 0, (byte) 14);
+        b.packBytes( 0, (byte) 124);
+        b.packBytes( 3, (byte) 126);
+        b.packBytes( 0, (byte) 13);
+        b.packBytes( 1, (byte) 243);
+        b.packBytes( 2, (byte) 124);
+        b.packBytes( 0, (byte) 124);
         
         /*
         b.leftoverBits = 1;
@@ -83,7 +84,7 @@ public class Bitpacker
     }
     
     // dictonary size determins how many bits to leave for the parse number
-    public void packBytes(int dictionarySize,int parseNumber, byte character)
+    public void packBytes(int parseNumber, byte character)
     {
         System.out.println("dictionary size: "+dictionarySize);
         // get number of bits and bytes need for phrase number
@@ -135,6 +136,8 @@ public class Bitpacker
         leftoverLength = remainder;
         System.out.println("leftover");
         BytesUtil.printIntBits(leftoverBits);
+
+	    dictionarySize++;
     }
     
 }

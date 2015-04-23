@@ -7,9 +7,11 @@ import java.util.List;
  *
  * @author FRANKIE
  */
-public class BitUnpacker {
+public class BitUnpacker implements IUnpacker
+{
     
     private int dictionarySize = 0;
+	private Decompressor _decomp;
     //public List<Pair> = new List<Pair>();
     
      public static void main(String[] args) 
@@ -59,7 +61,10 @@ public class BitUnpacker {
     
     public BitUnpacker()
     {
-        
+	    try
+	    {
+		    _decomp = new Decompressor(4000000, new FileOutputStream("out.decomp"));
+	    }catch(Exception e){}
     }
     
     public void UnpackBits(FileInputStream inputStream)
@@ -212,6 +217,7 @@ public class BitUnpacker {
                 System.out.println("parse num " + parseNumber);
                 System.out.println("byte seq  " + byteSequence);
                 BytesUtil.printBytes(BytesUtil.intToBytes(byteSequence, 1));
+	            _decomp.process(parseNumber, (byte) byteSequence);
                 // TODO chuck output shit here
                
                 if(leftover == 0)

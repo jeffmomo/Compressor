@@ -6,32 +6,35 @@ public class Main {
     {
 	// write your code here
 
-	    if(true)
+	    if(false)
 	    {
 
 		    Trie bob = new Trie();
 		    try
 		    {
-			    File f = new File("out.txt");
+			    File f = new File("out.comp");
 			    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(f));
+			    Compressor c = new Compressor(bos);
 
-			    int z = 0;//System.in.read();
-			    //while (z != -1)
-			    for(int i = 0; i < 6; i++)
+			    int z = System.in.read();
+			    while (z != -1)
 			    {
-				    z = System.in.read();
+
 				    System.err.println(z);
 				    int seq = bob.advance((byte) z);
+				    c.process((byte) z);
 				    if (seq != -1)
 				    {
 
-					    bos.write(seq);
+					   // bos.write(seq);
 
-					    bos.write(z);
-					    System.out.println(Integer.toString(seq, Character.MAX_RADIX) + "``" + (char) z);
+					    //bos.write(z);
+					    //System.out.println(Integer.toString(seq, Character.MAX_RADIX) + "``" + (char) z);
 				    }
+				    z = System.in.read();
 
 			    }
+			    bos.write(c.finalise());
 			    if(bob.finalisable())
 				    System.out.println(Integer.toString(bob.finalise(), Character.MAX_RADIX) + "``" + (char) z);
 			    bos.flush();
@@ -44,21 +47,25 @@ public class Main {
 	    else
 	    {
 
-		    Decompressor decomp = new Decompressor(65535, System.out);
+		    IUnpacker bu = new DummyUnpack();
 		    try
 		    {
-			    BufferedReader bis = new BufferedReader(new InputStreamReader(System.in));
+			    //BufferedReader bis = new BufferedReader(new InputStreamReader(System.in));
 
-			    String temp;
-			    while ((temp = bis.readLine()) != null)
-			    {
-				    if (temp.isEmpty())
-					    continue;
-				    String[] splitted = temp.split("``");
-				    int seq = Integer.parseInt(splitted[0], Character.MAX_RADIX);
-				    byte ch = splitted.length == 1 ? (byte)('\n') : ((byte) (splitted[1].charAt(0)));
-				    decomp.process(seq, ch);
-			    }
+
+
+			    bu.UnpackBits(new FileInputStream("out.comp"));
+
+//			    String temp;
+//			    while ((temp = bis.readLine()) != null)
+//			    {
+//				    if (temp.isEmpty())
+//					    continue;
+//				    String[] splitted = temp.split("``");
+//				    int seq = Integer.parseInt(splitted[0], Character.MAX_RADIX);
+//				    byte ch = splitted.length == 1 ? (byte)('\n') : ((byte) (splitted[1].charAt(0)));
+//				    decomp.process(seq, ch);
+//			    }
 
 
 		    } catch (Exception e)
