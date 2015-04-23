@@ -6,37 +6,23 @@ public class Main {
     {
 	// write your code here
 
-	    if(false)
+	    if(true)
 	    {
 
-		    Trie bob = new Trie();
 		    try
 		    {
-			    File f = new File("out.comp");
-			    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(f));
+			    FileInputStream fis = new FileInputStream("in");
+			    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream("out.comp"));
 			    Compressor c = new Compressor(bos);
 
-			    int z = System.in.read();
+			    int z = fis.read();
 			    while (z != -1)
 			    {
-
 				    System.err.println(z);
-				    int seq = bob.advance((byte) z);
 				    c.process((byte) z);
-				    if (seq != -1)
-				    {
-
-					   // bos.write(seq);
-
-					    //bos.write(z);
-					    //System.out.println(Integer.toString(seq, Character.MAX_RADIX) + "``" + (char) z);
-				    }
-				    z = System.in.read();
-
+				    z = fis.read();
 			    }
 			    bos.write(c.finalise());
-			    if(bob.finalisable())
-				    System.out.println(Integer.toString(bob.finalise(), Character.MAX_RADIX) + "``" + (char) z);
 			    bos.flush();
 			    bos.close();
 		    } catch (Exception e)
