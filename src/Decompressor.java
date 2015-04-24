@@ -15,10 +15,13 @@ public class Decompressor
 
 	private OutputStream _stream;
 
+	private int _max;
+
 
 	// Constructs a decompressor from an output stream and the max sequence number (i.e. dictionary size) possible
 	public Decompressor(int maxSequence, OutputStream stream)
 	{
+		_max = maxSequence;
 		_sequenceArray = new int[maxSequence];
 		_charArray = new byte[maxSequence];
 		_stream = stream;
@@ -28,8 +31,11 @@ public class Decompressor
 	public void process(int seqNum, byte chr) throws IOException
 	{
 		// Adds the tuple to the array of previously seen n-grams
-		_sequenceArray[++_position] = seqNum;
-		_charArray[_position] = chr;
+		if(_position < _max)
+		{
+			_sequenceArray[++_position] = seqNum;
+			_charArray[_position] = chr;
+		}
 
 		// Current character being looked at
 		byte currentChar = chr;

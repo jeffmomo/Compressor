@@ -9,7 +9,7 @@ public class DummyPack implements IPacker
 
 	public void packBytes(int parseNumber, byte character)
 	{
-		out += (Integer.toString(parseNumber, Character.MAX_RADIX) + "``" + (char) character + "\n");
+		out += (Integer.toString(parseNumber) + "``" + (char) character + "\n");
 	}
 
 	public byte[] returnPackedBits()

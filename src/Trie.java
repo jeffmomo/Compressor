@@ -6,6 +6,9 @@ public class Trie
 	// The current sequence number
 	private int _count = 0;
 
+	// Maximum sequence number
+	private int _max;
+
 	// The base list
 	private PointerLinkedList<Byte> _base;
 
@@ -18,10 +21,11 @@ public class Trie
 	// Represents the previous matching sequence number.
 	private PointerLinkedList<Byte> _prevSeen = null;
 
-	public Trie()
+	public Trie(int max)
 	{
 		_base = new PointerLinkedList<Byte>();
 		_current = _base;
+		_max = max;
 	}
 
 	public boolean finalisable()
@@ -60,7 +64,8 @@ public class Trie
 			// Gets the sequence number and outputs it. And also start the next search from the base again.
 			else if(next.find(chr) == null)
 			{
-				next.add(++_count, chr);
+				if(_count < _max)
+					next.add(++_count, chr);
 				_sameLayer = true;
 				int out = _current.getSequenceNumber();
 				_current = _base;
@@ -82,7 +87,8 @@ public class Trie
 		// If not found, then adds to the current layer of the trie, and outputs the appropriate sequence number. Also starts the next search from base again.
 		else
 		{
-			_current.add(++_count, chr);
+			if(_count < _max)
+				_current.add(++_count, chr);
 			int out = (_current == _base && _sameLayer) ? 0 : nextSeqNum;
 			_current = _base;
 			_sameLayer = true;
