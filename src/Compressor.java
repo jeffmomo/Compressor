@@ -16,7 +16,7 @@ public class Compressor
 	{
 		_stream = os;
 		_trie = new Trie(4000000);
-		_packer = new DummyPack();
+		_packer = new Bitpacker();//DummyPack();
 	}
 
 	public void process(byte in) throws IOException

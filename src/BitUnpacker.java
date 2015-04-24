@@ -115,7 +115,7 @@ public class BitUnpacker implements IUnpacker
                         System.out.println("leftover buffer ");
                         BytesUtil.printIntBits(buffer);
                         // set parse number and leftover based on which is larger
-                        if (parseNumLength <= leftover)
+                        if (parseNumLength < leftover)
                         {
                             parseNumber = (buffer << (8-leftover)) >>> (8-parseNumLength);
                             leftover -= parseNumLength;

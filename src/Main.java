@@ -33,7 +33,7 @@ public class Main {
 	    else
 	    {
 
-		    IUnpacker bu = new DummyUnpack();
+		    IUnpacker bu = new BitUnpacker();// DummyUnpack();
 		    try
 		    {
 			    //BufferedReader bis = new BufferedReader(new InputStreamReader(System.in));
