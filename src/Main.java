@@ -6,7 +6,7 @@ public class Main {
     {
 	// write your code here
 
-	    if(true)
+	    if(args[0].equals("c"))
 	    {
 
 		    try

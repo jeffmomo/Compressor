@@ -16,7 +16,7 @@ public class BitUnpacker implements IUnpacker
     
      public static void main(String[] args) 
     {
-        // test case should return 7 as parse number with a dictonary size of 7 and a byte of 1111 0101 (245 as an int)
+        // test case should return 7 as phrase number with a dictonary size of 7 and a byte of 1111 0101 (245 as an int)
         // 111 1111 0101
         // 1111 1110 1011 1111
         
@@ -70,11 +70,11 @@ public class BitUnpacker implements IUnpacker
     public void UnpackBits(FileInputStream inputStream)
     {
         
-        int parseNumber = 0;
+        int phraseNumber = 0;
         int leftover = 0;
         int byteSequence = 0;
         int buffer;
-        int parseNumLength;
+        int phraseNumLength;
         boolean foundParseNum = false;
 
         
@@ -90,35 +90,35 @@ public class BitUnpacker implements IUnpacker
                 
                 System.out.println("Start of loop buffer ");
                 BytesUtil.printIntBits(buffer);
-                // finding parse number
+                // finding phrase number
                 
-                parseNumLength = BytesUtil.getBitsNeeded(dictionarySize);
-                System.out.println("dictionary size " + dictionarySize + " parse num length " + parseNumLength);
+                phraseNumLength = BytesUtil.getBitsNeeded(dictionarySize);
+                System.out.println("dictionary size " + dictionarySize + " phrase num length " + phraseNumLength);
                 
                 while (!foundParseNum)
                 {
-                    System.out.println("finding parse num");
-                    // if the ditionary size is zero then there is no parse number
-                    if(parseNumLength == 0)
+                    System.out.println("finding phrase num");
+                    // if the ditionary size is zero then there is no phrase number
+                    if(phraseNumLength == 0)
                     {
-                        System.out.println("parse number is zero");
+                        System.out.println("phrase number is zero");
                         // skip and look for byte array
                         foundParseNum = true;
                         leftover = 0;
                         break;
                     } else
-                    // if there is carry over, concat that to the parse num
+                    // if there is carry over, concat that to the phrase num
                     if(leftover > 0)
                     {
                         // shift and shift back to remove already processed bits
                         buffer = (buffer << 32-leftover) >>> (32-leftover);
                         System.out.println("leftover buffer ");
                         BytesUtil.printIntBits(buffer);
-                        // set parse number and leftover based on which is larger
-                        if (parseNumLength < leftover)
+                        // set phrase number and leftover based on which is larger
+                        if (phraseNumLength < leftover)
                         {
-                            parseNumber = (buffer << (8-leftover)) >>> (8-parseNumLength);
-                            leftover -= parseNumLength;
+                            phraseNumber = (buffer << (8-leftover)) >>> (8-phraseNumLength);
+                            leftover -= phraseNumLength;
                             foundParseNum = true;
                             
                             System.out.println("leftover size " + leftover);
@@ -126,30 +126,30 @@ public class BitUnpacker implements IUnpacker
                         }
                         else
                         {
-                            parseNumLength -= leftover;
-                            System.out.println("parsenumlength " + parseNumLength);
-                            parseNumber = buffer;
+                            phraseNumLength -= leftover;
+                            System.out.println("phrasenumlength " + phraseNumLength);
+                            phraseNumber = buffer;
                             buffer = inputStream.read();
                             System.out.println("buffer " + buffer);
                             BytesUtil.printIntBits(buffer); 
-                            leftover = 0;//8-parseNumLength;
+                            leftover = 0;//8-phraseNumLength;
                             System.out.println("leftover set " + leftover);
                         }
-                    } else
-                    // if parse number is less than 8 bits long then the byte read will contain some of the byte sequence
-                    if(parseNumLength <= 8)
+                    }
+                    // if phrase number is less than 8 bits long then the byte read will contain some of the byte sequence
+                    if(phraseNumLength <= 8)
                     { 
-                        System.out.println("parse number less than a byte");
-                        parseNumber = (parseNumber << parseNumLength) | (buffer >>> 8-parseNumLength);                        
-                        leftover = 8 - parseNumLength;
+                        System.out.println("phrase number less than a byte");
+                        phraseNumber = (phraseNumber << phraseNumLength) | (buffer >>> 8-phraseNumLength);                        
+                        leftover = 8 - phraseNumLength;
                         foundParseNum = true;
                         break;
                     } else
-                    // otherwise the parse number takes multiple bytes and will need to be built
+                    // otherwise the phrase number takes multiple bytes and will need to be built
                     {
-                        System.out.println("parse number spans more than 1 byte");
-                        parseNumber = parseNumber << 8 | buffer;            
-                        parseNumLength -= 8;
+                        System.out.println("phrase number spans more than 1 byte");
+                        phraseNumber = phraseNumber << 8 | buffer;            
+                        phraseNumLength -= 8;
                         buffer = inputStream.read();
                         System.out.println("buffer " + buffer);
                         BytesUtil.printIntBits(buffer);
@@ -200,7 +200,7 @@ public class BitUnpacker implements IUnpacker
                     // leftover is still the same
                     
                 } else
-                if(parseNumLength == 0)
+                if(phraseNumLength == 0)
                 {
                     byteSequence = buffer;
                 }else
@@ -214,12 +214,14 @@ public class BitUnpacker implements IUnpacker
                 foundParseNum = false;
                 
                 // TODO chuck output shit here
-                System.out.println("parse num " + parseNumber);
+                System.out.println("phrase num " + phraseNumber);
                 System.out.println("byte seq  " + byteSequence);
                 BytesUtil.printBytes(BytesUtil.intToBytes(byteSequence, 1));
-	            _decomp.process(parseNumber, (byte) byteSequence);
+	            _decomp.process(phraseNumber, BytesUtil.intToBytes(byteSequence,1)[0]);
                 // TODO chuck output shit here
                
+                // clear phrase number so no residual bits are left
+                phraseNumber = 0;
                 if(leftover == 0)
                 {
                     System.out.println("no left");

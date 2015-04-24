@@ -17,14 +17,14 @@ public class Bitpacker implements IPacker
     public static void main(String[] args) 
     {
         // testing
-       /* int dictionarySize = Integer.parseInt(args[0]);
-        int parseNumber = Integer.parseInt(args[1]);
+       /* int dictionarySize = Integer.phraseInt(args[0]);
+        int phraseNumber = Integer.phraseInt(args[1]);
         
         
-        printIntBits(parseNumber);
+        printIntBits(phraseNumber);
         System.out.println("" + getBitsNeeded(dictionarySize));
         System.out.println("" + getBytesNeeded(getBitsNeeded(dictionarySize)));
-        byte[] buf = BytesUtil.intToBytes(parseNumber, getBytesNeeded(parseNumber));
+        byte[] buf = BytesUtil.intToBytes(phraseNumber, getBytesNeeded(phraseNumber));
         
         //BytesUtil.printBytes(buf);
         System.out.println("" + BytesUtil.bytesToInt(buf, 0, buf.length));
@@ -45,7 +45,7 @@ public class Bitpacker implements IPacker
         /*
         b.leftoverBits = 1;
         b.leftoverLength = 1;*/
-        //b.packBytes(dictionarySize, parseNumber, (byte)245);
+        //b.packBytes(dictionarySize, phraseNumber, (byte)245);
         
         
         
@@ -83,15 +83,15 @@ public class Bitpacker implements IPacker
         return byteOutput.toByteArray();
     }
     
-    // dictonary size determins how many bits to leave for the parse number
-    public void packBytes(int parseNumber, byte character)
+    // dictonary size determins how many bits to leave for the phrase number
+    public void packBytes(int phraseNumber, byte character)
     {
         System.out.println("dictionary size: "+dictionarySize);
         // get number of bits and bytes need for phrase number
         int bitsNeeded = BytesUtil.getBitsNeeded(dictionarySize);
         
-        // shifting parse number into correct position
-        int p = parseNumber << 8;//(bitsNeeded);
+        // shifting phrase number into correct position
+        int p = phraseNumber << 8;//(bitsNeeded);
         // remove sign in character
         int c = (((int)character) << (32-8)) >>> (32-8);
         // shifting carryover bits
@@ -105,7 +105,7 @@ public class Bitpacker implements IPacker
         System.out.println("c " + c);
         BytesUtil.printIntBits(c);
         
-        // pack both character and parse number with leftover
+        // pack both character and phrase number with leftover
         int packedBytes = co | p | c;
         System.out.println("concat");
         BytesUtil.printIntBits(packedBytes);
