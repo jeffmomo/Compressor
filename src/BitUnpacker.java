@@ -112,10 +112,10 @@ public class BitUnpacker implements IUnpacker
                     {
                         // shift and shift back to remove already processed bits
                         buffer = (buffer << 32-leftover) >>> (32-leftover);
-                        System.out.println("leftover buffer size" + leftover);
+                        System.out.println("leftover buffer ");
                         BytesUtil.printIntBits(buffer);
                         // set parse number and leftover based on which is larger
-                        if (parseNumLength < leftover)
+                        if (parseNumLength <= leftover)
                         {
                             parseNumber = (buffer << (8-leftover)) >>> (8-parseNumLength);
                             leftover -= parseNumLength;
@@ -135,14 +135,11 @@ public class BitUnpacker implements IUnpacker
                             leftover = 0;//8-parseNumLength;
                             System.out.println("leftover set " + leftover);
                         }
-                    }
+                    } else
                     // if parse number is less than 8 bits long then the byte read will contain some of the byte sequence
                     if(parseNumLength <= 8)
-                    {
+                    { 
                         System.out.println("parse number less than a byte");
-                        
-                        System.out.println("parsenumlength " + parseNumLength);
-                        BytesUtil.printIntBits(parseNumber); 
                         parseNumber = (parseNumber << parseNumLength) | (buffer >>> 8-parseNumLength);                        
                         leftover = 8 - parseNumLength;
                         foundParseNum = true;
@@ -158,6 +155,7 @@ public class BitUnpacker implements IUnpacker
                         BytesUtil.printIntBits(buffer);
                     }
                 }
+                
 
                 // finding byte sequence
                 
@@ -219,7 +217,7 @@ public class BitUnpacker implements IUnpacker
                 System.out.println("parse num " + parseNumber);
                 System.out.println("byte seq  " + byteSequence);
                 BytesUtil.printBytes(BytesUtil.intToBytes(byteSequence, 1));
-	            _decomp.process(parseNumber, BytesUtil.intToBytes(byteSequence,1)[0]);
+	            _decomp.process(parseNumber, (byte) byteSequence);
                 // TODO chuck output shit here
                
                 if(leftover == 0)
