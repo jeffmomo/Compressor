@@ -36,7 +36,7 @@ public class Trie
 	// Outputs the final sequence
 	public int finalise()
 	{
-		return (_prevSeen == _base) ? 0 : _prevSeen.getSequenceNumber();
+		return (_prevSeen == _base && _sameLayer) ? 0 : _prevSeen.getSequenceNumber();
 	}
 
 	// Advances a byte through the trie. Returns either the sequence number or -1 which indicates its still in a matching sequence
@@ -79,8 +79,8 @@ public class Trie
 		{
 			// Go down the trie
 			_sameLayer = false;
-			_current = next;
 			_prevSeen = _current;
+			_current = next;
 			// Returns -1 meaning it is still matching sequence
 			return -1;
 		}

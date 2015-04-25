@@ -5,5 +5,5 @@ import java.io.FileInputStream;
  */
 public interface IUnpacker
 {
-	public void UnpackBits(FileInputStream f);
+	public void UnpackBits();
 }

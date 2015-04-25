@@ -7,17 +7,17 @@ import java.util.List;
  *
  * @author FRANKIE
  */
-public class BitUnpacker
+public class BitUnpacker implements IUnpacker
 {
     
     private int dictionarySize = 0;
     private int bufferCount = 0;
     private int bufferIndex = 0;
     private byte[] byteBuffer = new byte[1000];
-    private FileInputStream inputStream;
+    private InputStream inputStream;
     private Decompressor _decomp;
    
-    public BitUnpacker(FileInputStream inputStream)
+    public BitUnpacker(InputStream inputStream)
     {
         this.inputStream = inputStream;
         try

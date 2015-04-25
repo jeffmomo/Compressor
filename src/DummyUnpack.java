@@ -3,20 +3,26 @@ import java.io.*;
 public class DummyUnpack implements IUnpacker
 {
 	public Decompressor _decomp;
+	public OutputStream _outStream;
+	private InputStream _inStream;
 
-	public DummyUnpack()
+	public DummyUnpack(InputStream iss)
 	{
+
 		try
 		{
-			_decomp = new Decompressor(4000000, new FileOutputStream("out.decomp"));
+			_inStream = iss;
+			_outStream = new BufferedOutputStream(new FileOutputStream("out.decomp"));
+			_decomp = new Decompressor(4000000, _outStream);
 		}catch(Exception e){}
 	}
 
-	public void UnpackBits(FileInputStream f)
+	public void UnpackBits()
 	{
-		BufferedReader br = new BufferedReader(new InputStreamReader(f));
+		BufferedReader br = new BufferedReader(new InputStreamReader(_inStream));
 		String temp;
 		try
+
 		{
 			while ((temp = br.readLine()) != null)
 			{
@@ -27,6 +33,9 @@ public class DummyUnpack implements IUnpacker
 				byte ch = splitted.length == 1 ? (byte)('\n') : ((byte) (splitted[1].charAt(0)));
 				_decomp.process(seq, ch);
 			}
+
+			_outStream.close();
+
 		}catch(Exception e){}
 	}
 

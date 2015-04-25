@@ -3,9 +3,9 @@
  */
 public interface IPacker
 {
-	public void packBytes(int parseNumber, byte character);
 
+	public void finalisePackedBits();
 
-	public byte[] returnPackedBits();
+	public void packBytes(int phraseNumber, byte byteSeq);
 
 }

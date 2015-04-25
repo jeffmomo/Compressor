@@ -9,7 +9,7 @@ public class Compressor
 
 	private OutputStream _stream;
 	private Trie _trie;
-	private BitPacker _packer;
+	private IPacker _packer;
 	private byte _prevByte;
 
 	public Compressor(OutputStream os)

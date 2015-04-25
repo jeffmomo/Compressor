@@ -12,7 +12,7 @@ public class Main {
 
 		    try
 		    {
-			    FileInputStream fis = new FileInputStream("in");
+			    BufferedInputStream fis = new BufferedInputStream(new FileInputStream("in"));
 			    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream("out.comp"));
 			    Compressor c = new Compressor(bos);
 
@@ -37,7 +37,7 @@ public class Main {
 		    
 		    try
 		    {
-                        BitUnpacker bu = new BitUnpacker(new FileInputStream("out.comp"));// DummyUnpack();
+                        IUnpacker bu = new BitUnpacker(new BufferedInputStream(new FileInputStream("out.comp")));// DummyUnpack();
 			    //BufferedReader bis = new BufferedReader(new InputStreamReader(System.in));
 
 
