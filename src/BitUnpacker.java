@@ -7,81 +7,41 @@ import java.util.List;
  *
  * @author FRANKIE
  */
-public class BitUnpacker implements IUnpacker
+public class BitUnpacker
 {
     
     private int dictionarySize = 0;
-	private Decompressor _decomp;
-    //public List<Pair> = new List<Pair>();
-    
-     public static void main(String[] args) 
+    private int bufferCount = 0;
+    private int bufferIndex = 0;
+    private byte[] byteBuffer = new byte[1000];
+    private FileInputStream inputStream;
+    private Decompressor _decomp;
+   
+    public BitUnpacker(FileInputStream inputStream)
     {
-        // test case should return 7 as phrase number with a dictonary size of 7 and a byte of 1111 0101 (245 as an int)
-        // 111 1111 0101
-        // 1111 1110 1011 1111
-        
-        
+        this.inputStream = inputStream;
         try
         {
-            
-            File file = new File("f");
-            
-            /*FileOutputStream f = new FileOutputStream("f");
-            ByteArrayOutputStream b = new ByteArrayOutputStream();
-            b.write(BytesUtil.intToBytes(254, 1));
-            b.write(BytesUtil.intToBytes(191, 1));
-            
-            f.write(b.toByteArray());
-            b.close();
-            f.close();*/
-            
-            
-            FileInputStream inputStream = new FileInputStream(file);
-            
-            /*
-            printIntBits(inputStream.read());
-            printIntBits(inputStream.read());
-            printIntBits(inputStream.read());
-            printIntBits(inputStream.read());
-            printIntBits(inputStream.read());
-            printIntBits(inputStream.read());
-            printIntBits(inputStream.read());
-            printIntBits(inputStream.read());*/
-            
-            BitUnpacker b = new BitUnpacker();
-            //b.dictionarySize = 7;
-            b.UnpackBits(inputStream);
-            
-        } catch(Exception e){};
-        
-        
+            _decomp = new Decompressor(4000000, new FileOutputStream("out.decomp"));
+        }catch(Exception e){}
     }
     
     
     
-    public BitUnpacker()
+    public void UnpackBits()
     {
-	    try
-	    {
-		    _decomp = new Decompressor(4000000, new FileOutputStream("out.decomp"));
-	    }catch(Exception e){}
-    }
-    
-    public void UnpackBits(FileInputStream inputStream)
-    {
-        
         int phraseNumber = 0;
         int leftover = 0;
         int byteSequence = 0;
         int buffer;
         int phraseNumLength;
-        boolean foundParseNum = false;
+        boolean foundPhraseNum = false;
 
         
         try
         {
             
-            buffer = inputStream.read();
+            buffer = nextByte();
             System.out.println("buffer " + buffer);
             BytesUtil.printIntBits(buffer);
             // loop
@@ -95,7 +55,7 @@ public class BitUnpacker implements IUnpacker
                 phraseNumLength = BytesUtil.getBitsNeeded(dictionarySize);
                 System.out.println("dictionary size " + dictionarySize + " phrase num length " + phraseNumLength);
                 
-                while (!foundParseNum)
+                while (!foundPhraseNum)
                 {
                     System.out.println("finding phrase num");
                     // if the ditionary size is zero then there is no phrase number
@@ -103,7 +63,7 @@ public class BitUnpacker implements IUnpacker
                     {
                         System.out.println("phrase number is zero");
                         // skip and look for byte array
-                        foundParseNum = true;
+                        foundPhraseNum = true;
                         leftover = 0;
                         break;
                     } else
@@ -119,7 +79,7 @@ public class BitUnpacker implements IUnpacker
                         {
                             phraseNumber = (buffer << (8-leftover)) >>> (8-phraseNumLength);
                             leftover -= phraseNumLength;
-                            foundParseNum = true;
+                            foundPhraseNum = true;
                             
                             System.out.println("leftover size " + leftover);
                             break;
@@ -129,7 +89,7 @@ public class BitUnpacker implements IUnpacker
                             phraseNumLength -= leftover;
                             System.out.println("phrasenumlength " + phraseNumLength);
                             phraseNumber = buffer;
-                            buffer = inputStream.read();
+                            buffer = nextByte();
                             System.out.println("buffer " + buffer);
                             BytesUtil.printIntBits(buffer); 
                             leftover = 0;//8-phraseNumLength;
@@ -142,7 +102,7 @@ public class BitUnpacker implements IUnpacker
                         System.out.println("phrase number less than a byte");
                         phraseNumber = (phraseNumber << phraseNumLength) | (buffer >>> 8-phraseNumLength);                        
                         leftover = 8 - phraseNumLength;
-                        foundParseNum = true;
+                        foundPhraseNum = true;
                         break;
                     } else
                     // otherwise the phrase number takes multiple bytes and will need to be built
@@ -150,7 +110,7 @@ public class BitUnpacker implements IUnpacker
                         System.out.println("phrase number spans more than 1 byte");
                         phraseNumber = phraseNumber << 8 | buffer;            
                         phraseNumLength -= 8;
-                        buffer = inputStream.read();
+                        buffer = nextByte();
                         System.out.println("buffer " + buffer);
                         BytesUtil.printIntBits(buffer);
                     }
@@ -165,59 +125,45 @@ public class BitUnpacker implements IUnpacker
                     BytesUtil.printIntBits(buffer);
                     
                     System.out.println("leftover " + leftover);
-                    // move leftover into position
+                    // move leftover into position, shift and shift back to remove what was already used to find phrase number
                     int l = (((buffer << (32 - leftover))) >>> (32 - leftover)) << (8-leftover);
                     
                     // readin rest of byte sequence
-                    buffer = inputStream.read();
+                    buffer = nextByte();
                     
-                    // shift into position
+                    // temp int with rest of byte sequence shifted into position
                     int d = buffer >>> leftover;
-                    
                     
                     byteSequence = l | d;
                     
-                    // shift and shift back to remove what was already used
-                    
-                    /*
-                    //buffer = (buffer << 32 - leftover) >>> (32 - leftover);
-                    byteSequence = (buffer << 32 - leftover) >>> (32 - leftover) << (8-leftover);
-                    System.out.println("leftover byte seq len" + leftover);
-                    printIntBits(byteSequence);
-                    
-                    // go on to next byte
-                    buffer = inputStream.read();
-                    System.out.println("buffer " + buffer);
-                    printIntBits(buffer);
-                    byteSequence = byteSequence | (buffer >>> leftover);
-                    
-                    System.out.println("byte seq + leftover ");
-                    printIntBits(byteSequence);*/
-                    
-                    // break out of loop if the end of file has been reached
+                    // break out of loop if the end of file has been reached and avoid outputing
                     if(buffer == -1)
                         break;
                     // leftover is still the same
-                    
                 } else
                 if(phraseNumLength == 0)
                 {
+                    // if there is nothing in dictonary then there is no phrase number
                     byteSequence = buffer;
                 }else
+                // no leftover and dictonary size is not zero
                 {
-                    buffer = inputStream.read();
+                    buffer = nextByte();
+                    // break out of loop if the end of file has been reached and avoid outputing
+                    if(buffer == -1)
+                        break;
                     System.out.println("buffer " + buffer);
                     BytesUtil.printIntBits(buffer);
                     byteSequence = buffer;
                 }
                 dictionarySize++;
-                foundParseNum = false;
+                foundPhraseNum = false;
                 
                 // TODO chuck output shit here
                 System.out.println("phrase num " + phraseNumber);
                 System.out.println("byte seq  " + byteSequence);
                 BytesUtil.printBytes(BytesUtil.intToBytes(byteSequence, 1));
-	            _decomp.process(phraseNumber, BytesUtil.intToBytes(byteSequence,1)[0]);
+                _decomp.process(phraseNumber, BytesUtil.intToBytes(byteSequence,1)[0]);
                 // TODO chuck output shit here
                
                 // clear phrase number so no residual bits are left
@@ -225,7 +171,7 @@ public class BitUnpacker implements IUnpacker
                 if(leftover == 0)
                 {
                     System.out.println("no left");
-                    buffer = inputStream.read();
+                    buffer = nextByte();
                 }
             }
             
@@ -233,6 +179,30 @@ public class BitUnpacker implements IUnpacker
         
     }
     
-    
+    // returns next byte in the buffer
+    private int nextByte()
+    {
+        int b = -1;
+        // if the end of the buffer has been reached then fill the buffer with the file
+        if(bufferIndex >= bufferCount)
+        {
+            try 
+            {
+                bufferCount = inputStream.read(byteBuffer);
+                System.out.println("bytes in buffer "+ bufferCount);
+                bufferIndex = 0;
+            }catch(Exception e){}
+        }
+        // if end of file is not reached then return next byte
+        if(bufferCount > 0)
+        {
+            System.out.println("bytes index "+ bufferIndex + " out of " + bufferCount);
+            b = BytesUtil.bytesToInt(byteBuffer, bufferIndex, 1);
+            bufferIndex++;
+        }
+        
+        // if end of file was reached, then -1 would be returned
+        return b;
+    }
     
 }

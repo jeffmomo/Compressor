@@ -33,14 +33,14 @@ public class Main {
 	    else
 	    {
 
-		    IUnpacker bu = new BitUnpacker();// DummyUnpack();
+		    
 		    try
 		    {
+                        BitUnpacker bu = new BitUnpacker(new FileInputStream("out.comp"));// DummyUnpack();
 			    //BufferedReader bis = new BufferedReader(new InputStreamReader(System.in));
 
 
 
-			    bu.UnpackBits(new FileInputStream("out.comp"));
 
 //			    String temp;
 //			    while ((temp = bis.readLine()) != null)
