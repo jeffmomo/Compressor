@@ -30,10 +30,10 @@ public class Compressor
 		{
 			//System.out.println(Integer.toString(seq, Character.MAX_RADIX) + "``" + (char) in);
 			_packer.packBytes(seq, in);
-			String z = "";
+			/*String z = "";
 			z += (char) in;
 			System.out.print(">>>>");
-			BytesUtil.printBytes(z.getBytes());
+			BytesUtil.printBytes(z.getBytes());*/
 		}
 
 	}

@@ -4,6 +4,7 @@ public class Main {
 
     public static void main(String[] args)
     {
+        long startTime = System.currentTimeMillis();
 	// write your code here
 
 	    if(args[0].equals("c"))
@@ -18,7 +19,7 @@ public class Main {
 			    int z = fis.read();
 			    while (z != -1)
 			    {
-				    System.err.println(z);
+				    //System.err.println(z);
 				    c.process((byte) z);
 				    z = fis.read();
 			    }
@@ -60,5 +61,9 @@ public class Main {
 			    e.printStackTrace();
 		    }
 	    }
+            
+            long endTime   = System.currentTimeMillis();
+            long totalTime = endTime - startTime;
+            System.out.println("\ntotal thread 1 runtime: "+ totalTime);
     }
 }
