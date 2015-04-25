@@ -22,7 +22,7 @@ public class Main {
 				    c.process((byte) z);
 				    z = fis.read();
 			    }
-			    bos.write(c.finalise());
+			    c.finalise();
 			    bos.flush();
 			    bos.close();
 		    } catch (Exception e)
@@ -41,6 +41,7 @@ public class Main {
 
 
 
+                        bu.UnpackBits();
 
 //			    String temp;
 //			    while ((temp = bis.readLine()) != null)

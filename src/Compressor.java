@@ -9,14 +9,14 @@ public class Compressor
 
 	private OutputStream _stream;
 	private Trie _trie;
-	private IPacker _packer;
+	private BitPacker _packer;
 	private byte _prevByte;
 
 	public Compressor(OutputStream os)
 	{
 		_stream = os;
 		_trie = new Trie(4000000);
-		_packer = new Bitpacker();//DummyPack();
+		_packer = new BitPacker(_stream);//DummyPack();
 	}
 
 	public void process(byte in) throws IOException
@@ -38,14 +38,14 @@ public class Compressor
 
 	}
 
-	public byte[] finalise()
+	public void finalise()
 	{
 		if(_trie.finalisable())
 			_packer.packBytes(_trie.finalise(), _prevByte);
 
 
 
-		return _packer.returnPackedBits();
+		_packer.finalisePackedBits();
 
 	}
 

@@ -1,86 +1,41 @@
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+
+import java.io.*;
+
 
 /**
  *
  * @author Lanqin Yuan
  * 1196194
  */
-public class Bitpacker implements IPacker
+public class BitPacker
 {
-    private ByteArrayOutputStream byteOutput;
+    private OutputStream byteOutput;
     private int leftoverBits;
     private int leftoverLength;
-	private int dictionarySize = 0;
+    private int dictionarySize = 0;
     
-    public static void main(String[] args) 
-    {
-        // testing
-       /* int dictionarySize = Integer.phraseInt(args[0]);
-        int phraseNumber = Integer.phraseInt(args[1]);
-        
-        
-        printIntBits(phraseNumber);
-        System.out.println("" + getBitsNeeded(dictionarySize));
-        System.out.println("" + getBytesNeeded(getBitsNeeded(dictionarySize)));
-        byte[] buf = BytesUtil.intToBytes(phraseNumber, getBytesNeeded(phraseNumber));
-        
-        //BytesUtil.printBytes(buf);
-        System.out.println("" + BytesUtil.bytesToInt(buf, 0, buf.length));
-        */
-        //int dictionarySize = 0;
-        Bitpacker b = new Bitpacker();
-        b.packBytes( 0, (byte) 126);
-        b.packBytes( 1, (byte) 13);
-        b.packBytes(2, (byte) 7);
-        b.packBytes( 0, (byte) 14);
-        b.packBytes( 0, (byte) 124);
-        b.packBytes( 3, (byte) 126);
-        b.packBytes( 0, (byte) 13);
-        b.packBytes( 1, (byte) 243);
-        b.packBytes( 2, (byte) 124);
-        b.packBytes( 0, (byte) 124);
-        
-        /*
-        b.leftoverBits = 1;
-        b.leftoverLength = 1;*/
-        //b.packBytes(dictionarySize, phraseNumber, (byte)245);
-        
-        
-        
-        
-        System.out.println("final output");
-        byte[] finalBytes = b.returnPackedBits();
-        BytesUtil.printBytes(finalBytes);
-        
-        try 
-        {            
-            FileOutputStream f = new FileOutputStream("f");
-            f.write(finalBytes);
-            f.close();
-        } catch (Exception e){};
-    }
+  
 
-    public Bitpacker() 
+    public BitPacker(OutputStream outputStream) 
     {
-        byteOutput = new ByteArrayOutputStream();
+        byteOutput = outputStream;
         leftoverBits = 0;
         leftoverLength = 0;
     }
     
-    public byte[] returnPackedBits()
+    public void finalisePackedBits()
     {
         
-        // shift and write leftover bits into stream
+        // shift leftover bit to add padding for last byte
         int l = leftoverBits << (8 - leftoverLength);
-        byte[] outBytes = BytesUtil.intToBytes(l,1);
+        byte[] outByte = BytesUtil.intToBytes(l,1);
         System.out.println("derp ");
         BytesUtil.printIntBits(l);
-        byteOutput.write(outBytes, 0, 1);
-        
-        // retrun whole output as byte array
-        return byteOutput.toByteArray();
+        try
+        {
+        // write out last byte
+        byteOutput.write(outByte);
+        } catch(Exception e){};
     }
     
     // dictonary size determins how many bits to leave for the phrase number
@@ -92,7 +47,7 @@ public class Bitpacker implements IPacker
         
         // shifting phrase number into correct position
         int p = phraseNumber << 8;//(bitsNeeded);
-        // remove sign in character
+        // remove sign in byte sequence
         int c = (((int)character) << (32-8)) >>> (32-8);
         // shifting carryover bits
         int co = leftoverBits << (8 + bitsNeeded);
@@ -136,8 +91,7 @@ public class Bitpacker implements IPacker
         leftoverLength = remainder;
         System.out.println("leftover");
         BytesUtil.printIntBits(leftoverBits);
-
-	    dictionarySize++;
+        dictionarySize++;
     }
     
 }
