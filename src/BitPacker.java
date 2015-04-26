@@ -5,7 +5,9 @@ import java.io.*;
 /**
  *
  * @author Lanqin Yuan
- * 1196194
+ * 1196194 
+ * @author Jeff Mo
+ * 1196144
  */
 public class BitPacker implements IPacker
 {
@@ -27,11 +29,8 @@ public class BitPacker implements IPacker
     {
         
         // shift leftover bit to add padding for last byte
-        BytesUtil.printIntBits(leftoverBits);
         int l = leftoverBits << (8 - leftoverLength);
         byte[] outByte = BytesUtil.intToBytes(l,1);
-        System.out.println("d size " + dictionarySize);
-        BytesUtil.printIntBits(l);
         try
         {
             // write out last byte
@@ -42,7 +41,6 @@ public class BitPacker implements IPacker
     // dictonary size determins how many bits to leave for the phrase number
     public void packBytes(int phraseNumber, byte byteSeq)
     {
-        //System.out.println("dictionary size: "+dictionarySize);
         // get number of bits and bytes need for phrase number
         int bitsNeeded = BytesUtil.getBitsNeeded(dictionarySize);
 
@@ -51,24 +49,13 @@ public class BitPacker implements IPacker
         // shifting phrase number into correct position
         int p = phraseNumber;//(bitsNeeded);
         
-        // debuging
-        //System.out.println("co " + co);
-        //BytesUtil.printIntBits(co);
-        //System.out.println("p " + p);
-        //BytesUtil.printIntBits(p);
-        //System.out.println("c " + b);
-        //BytesUtil.printIntBits(b);
+
         
         // pack both character and phrase number with leftover
         int packedBytes = co | p ;
         
-        //System.out.println("concat");
-        //BytesUtil.printIntBits(packedBytes);
-        
         // finding how many bits do not form whole bytes
         int remainder = (leftoverLength + bitsNeeded) % 8;
-        //System.out.println("remainder " + remainder);
-
             
         // write leftover and phrase number. Only whole bytes to out stream
         byte[] outBytes = BytesUtil.intToBytes((packedBytes) >>> remainder, BytesUtil.getBytesNeeded(leftoverLength + bitsNeeded - remainder));
@@ -102,11 +89,6 @@ public class BitPacker implements IPacker
         }
         leftoverLength = remainder;
         
-       
-        
-        
-        //System.out.println("leftover");
-        //BytesUtil.printIntBits(leftoverBits);
         dictionarySize++;
     }
     

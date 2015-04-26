@@ -1,10 +1,14 @@
 /**
  *
  * Big endian byte and int conversion
+ *
  * @author Lanqin Yuan
- * 1196194
+ * 1196194 
+ * @author Jeff Mo
+ * 1196144
  */
-public class BytesUtil {
+public class BytesUtil 
+{
     
     public static byte[] intToBytes(int integer, int bufferSize)
     {

@@ -1,4 +1,13 @@
 /**
+ *
+ * @author Lanqin Yuan
+ * 1196194 
+ * @author Jeff Mo
+ * 1196144
+ */
+
+
+/**
  * A move-to-front list implementation with multiple layers which stores a sequence number and a value
  */
 public class PointerLinkedList<T>// implements ICharFinder<T>

@@ -1,4 +1,12 @@
 /**
+ *
+ * @author Lanqin Yuan
+ * 1196194 
+ * @author Jeff Mo
+ * 1196144
+ */
+
+/**
  * Simple doubly-linked list
  */
 public class LightList

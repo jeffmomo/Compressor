@@ -1,5 +1,9 @@
 /**
- * Created by Jeff on 7/04/2015.
+ *
+ * @author Lanqin Yuan
+ * 1196194 
+ * @author Jeff Mo
+ * 1196144
  */
 public class Trie
 {
