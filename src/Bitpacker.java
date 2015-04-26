@@ -7,7 +7,7 @@ import java.io.*;
  * @author Lanqin Yuan
  * 1196194
  */
-public class BitPacker
+public class BitPacker implements IPacker
 {
     private OutputStream byteOutput;
     private int leftoverBits;

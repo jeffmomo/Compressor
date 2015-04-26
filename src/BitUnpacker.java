@@ -22,7 +22,7 @@ public class BitUnpacker implements IUnpacker
         this.inputStream = inputStream;
         try
         {
-            _decomp = new Decompressor(10000000, new FileOutputStream("out.decomp"));
+            _decomp = new Decompressor(100000000, new FileOutputStream("out.decomp"));
         }catch(Exception e){}
     }
     
@@ -160,8 +160,8 @@ public class BitUnpacker implements IUnpacker
                 foundPhraseNum = false;
                 
                 // TODO chuck output shit here
-                //System.out.println("phrase num " + phraseNumber);
-                //System.out.println("byte seq  " + byteSequence);
+                System.out.println("phrase num " + phraseNumber);
+                System.out.println("byte seq  " + byteSequence);
                 //BytesUtil.printBytes(BytesUtil.intToBytes(byteSequence, 1));
                 _decomp.process(phraseNumber, BytesUtil.intToBytes(byteSequence,1)[0]);
                 // TODO chuck output shit here
