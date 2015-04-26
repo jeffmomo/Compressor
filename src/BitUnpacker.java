@@ -22,7 +22,7 @@ public class BitUnpacker implements IUnpacker
         this.inputStream = inputStream;
         try
         {
-            _decomp = new Decompressor(4000000, new FileOutputStream("out.decomp"));
+            _decomp = new Decompressor(10000000, new FileOutputStream("out.decomp"));
         }catch(Exception e){}
     }
     
@@ -58,7 +58,7 @@ public class BitUnpacker implements IUnpacker
                 while (!foundPhraseNum)
                 {
                     //System.out.println("finding phrase num");
-                    // if the ditionary size is zero then there is no phrase number
+                    // if the dictionary size is zero then there is no phrase number
                     if(phraseNumLength == 0)
                     {
                         //System.out.println("phrase number is zero");
@@ -143,10 +143,10 @@ public class BitUnpacker implements IUnpacker
                 } else
                 if(phraseNumLength == 0)
                 {
-                    // if there is nothing in dictonary then there is no phrase number
+                    // if there is nothing in dictionary then there is no phrase number
                     byteSequence = buffer;
                 }else
-                // no leftover and dictonary size is not zero
+                // no leftover and dictionary size is not zero
                 {
                     buffer = nextByte();
                     // break out of loop if the end of file has been reached and avoid outputing

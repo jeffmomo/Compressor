@@ -50,7 +50,7 @@ public class BitPacker
         // shifting phrase number into correct position
         int p = phraseNumber << 8;//(bitsNeeded);
         // remove sign in byte sequence
-        int b = (((int)byteSeq) << (32-8)) >>> (32-8);
+        int b = (int)byteSeq & 0xFF;
         
         
         // debuging
