@@ -27,10 +27,11 @@ public class BitPacker implements IPacker
     {
         
         // shift leftover bit to add padding for last byte
+        BytesUtil.printIntBits(leftoverBits);
         int l = leftoverBits << (8 - leftoverLength);
         byte[] outByte = BytesUtil.intToBytes(l,1);
-        //System.out.println("derp ");
-        //BytesUtil.printIntBits(l);
+        System.out.println("d size " + dictionarySize);
+        BytesUtil.printIntBits(l);
         try
         {
             // write out last byte
@@ -44,14 +45,11 @@ public class BitPacker implements IPacker
         //System.out.println("dictionary size: "+dictionarySize);
         // get number of bits and bytes need for phrase number
         int bitsNeeded = BytesUtil.getBitsNeeded(dictionarySize);
-        
+
         // shifting carryover bits
-        int co = leftoverBits << (8 + bitsNeeded);
+        int co = leftoverBits << (bitsNeeded);
         // shifting phrase number into correct position
-        int p = phraseNumber << 8;//(bitsNeeded);
-        // remove sign in byte sequence
-        int b = (int)byteSeq & 0xFF;
-        
+        int p = phraseNumber;//(bitsNeeded);
         
         // debuging
         //System.out.println("co " + co);
@@ -62,34 +60,51 @@ public class BitPacker implements IPacker
         //BytesUtil.printIntBits(b);
         
         // pack both character and phrase number with leftover
-        int packedBytes = co | p | b;
+        int packedBytes = co | p ;
+        
         //System.out.println("concat");
         //BytesUtil.printIntBits(packedBytes);
         
         // finding how many bits do not form whole bytes
-        int remainder = (leftoverLength + bitsNeeded)% 8;
+        int remainder = (leftoverLength + bitsNeeded) % 8;
         //System.out.println("remainder " + remainder);
-        
-        // write out whole bytes to out stream
-        byte[] outBytes = BytesUtil.intToBytes((packedBytes) >>> remainder, BytesUtil.getBytesNeeded(leftoverLength + bitsNeeded + 8 - remainder));
-        
-        //System.out.println("out bytes");
-        //BytesUtil.printBytes(outBytes);
+
+            
+        // write leftover and phrase number. Only whole bytes to out stream
+        byte[] outBytes = BytesUtil.intToBytes((packedBytes) >>> remainder, BytesUtil.getBytesNeeded(leftoverLength + bitsNeeded - remainder));
+       
         try
         {
             byteOutput.write(outBytes);
         } catch (IOException ex){ ex.printStackTrace(); }
         
+        // remove sign in byte sequence
+        int b = (int)byteSeq & 0xFF;
+        packedBytes = (((packedBytes) << (32 - remainder )) >>> (32-remainder -8)) | b ;
+        
+        // write leftover bits from phrase number plus the byte sequence.
+        outBytes = BytesUtil.intToBytes((packedBytes) >>> remainder, 1);
+        try
+        {
+            byteOutput.write(outBytes);
+        } catch (IOException ex){ ex.printStackTrace(); }
+        
+        
         // set leftover buffer
         if( remainder != 0)
         {
-            leftoverBits = (((int)packedBytes) << (32 - remainder )) >>> (32-remainder);
+            leftoverBits = ((packedBytes) << (32 - remainder )) >>> (32-remainder);
+            
         }
         else
         {
             leftoverBits = 0;
         }
         leftoverLength = remainder;
+        
+       
+        
+        
         //System.out.println("leftover");
         //BytesUtil.printIntBits(leftoverBits);
         dictionarySize++;

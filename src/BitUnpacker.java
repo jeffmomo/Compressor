@@ -13,7 +13,7 @@ public class BitUnpacker implements IUnpacker
     private int dictionarySize = 0;
     private int bufferCount = 0;
     private int bufferIndex = 0;
-    private byte[] byteBuffer = new byte[1000];
+    private byte[] byteBuffer = new byte[1024];
     private InputStream inputStream;
     private Decompressor _decomp;
    
@@ -130,7 +130,6 @@ public class BitUnpacker implements IUnpacker
                     
                     // readin rest of byte sequence
                     buffer = nextByte();
-                    
                     // temp int with rest of byte sequence shifted into position
                     int d = buffer >>> leftover;
                     
@@ -160,8 +159,8 @@ public class BitUnpacker implements IUnpacker
                 foundPhraseNum = false;
                 
                 // TODO chuck output shit here
-                System.out.println("phrase num " + phraseNumber);
-                System.out.println("byte seq  " + byteSequence);
+                //System.out.println("phrase num " + phraseNumber);
+                //System.out.println("byte seq  " + byteSequence);
                 //BytesUtil.printBytes(BytesUtil.intToBytes(byteSequence, 1));
                 _decomp.process(phraseNumber, BytesUtil.intToBytes(byteSequence,1)[0]);
                 // TODO chuck output shit here
@@ -197,7 +196,7 @@ public class BitUnpacker implements IUnpacker
         if(bufferCount > 0)
         {
             //System.out.println("bytes index "+ bufferIndex + " out of " + bufferCount);
-            b = BytesUtil.bytesToInt(byteBuffer, bufferIndex, 1);
+            b = (byte)byteBuffer[bufferIndex] & 0xFF;
             bufferIndex++;
         }
         

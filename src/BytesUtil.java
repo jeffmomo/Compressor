@@ -11,7 +11,7 @@ public class BytesUtil {
         byte[] buffer = new byte[bufferSize];
         for(int i = 0;i<bufferSize;i++)
         {
-            buffer[i] = (byte) (integer >> 8*(bufferSize - 1 -i));
+            buffer[i] = (byte) (integer >>> 8*(bufferSize - 1 -i));
         }
         return buffer;
     }
